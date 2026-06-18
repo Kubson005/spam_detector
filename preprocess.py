@@ -1,6 +1,6 @@
 import csv
-from tokenizers import Tokenizer, trainers
-import torch
+from collections import Counter
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 import re
 
@@ -53,7 +53,43 @@ def clean():
         test_text[i] = re.sub(r' +', ' ', test_text[i]).strip()
 
 
+tokens = []
+test_tokens = []
+tokens_dict = {"<PAD>": 0, "<UNK>": 1}
+sequences = []
+test_sequences = []
+
+def tokenize():
+    counter = Counter()
+
+    for i in range(len(text)):
+        tokens.append(text[i].split())
+
+    for i in range(len(test_text)):
+        test_tokens.append(test_text[i].split())
+    
+    for mail in tokens:
+        counter.update(mail)
+
+    for word, _ in counter.most_common():
+        tokens_dict[word] = len(tokens_dict)
+    
+    for mail in tokens:
+        seq = [tokens_dict.get(word, tokens_dict["<UNK>"]) for word in mail]
+        sequences.append(seq)
+
+    for mail in test_tokens:
+        seq = [tokens_dict.get(word, tokens_dict["<UNK>"]) for word in mail]
+        test_sequences.append(seq)
+
+    return (
+        pad_sequences(sequences, maxlen=100, padding="post", truncating="post"),
+        pad_sequences(test_sequences, maxlen=100, padding="post", truncating="post"),
+    )
+    
+    
+
 clean()
+X, test_X = tokenize()
 
-print(text[0])
-
+print(X[0])
