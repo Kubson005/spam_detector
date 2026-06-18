@@ -3,6 +3,7 @@ from collections import Counter
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 import re
+import numpy as np
 
 rows = []
 
@@ -30,6 +31,9 @@ text, test_text, label, test_label = train_test_split(
     random_state=42,
     stratify=label
 )
+
+label = np.asarray(label, dtype=np.int32)
+test_label = np.asarray(test_label, dtype=np.int32)
 
 
 def clean():
@@ -91,5 +95,3 @@ def tokenize():
 
 clean()
 X, test_X = tokenize()
-
-print(X[0])
