@@ -222,3 +222,4 @@ __marimo__/
 emails.csv
 test.py
 venv
+spam_detector.joblib
