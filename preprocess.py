@@ -62,6 +62,24 @@ test_tokens = []
 tokens_dict = {"<PAD>": 0, "<UNK>": 1}
 sequences = []
 test_sequences = []
+url_pattern = r'https?://\S+|www\.\S+'
+mail_pattern = r'\S+@\S+'
+
+
+def clean_text(message):
+    message = message.lower()
+    message = re.sub(' +', ' ', message)
+    message = re.sub(url_pattern, '', message)
+    message = re.sub(mail_pattern, '', message)
+    message = re.sub(r'[^a-zA-Z0-9 ]', '', message)
+    return re.sub(r' +', ' ', message).strip()
+
+
+def encode_text(message):
+    cleaned = clean_text(message)
+    words = cleaned.split()
+    seq = [tokens_dict.get(word, tokens_dict["<UNK>"]) for word in words]
+    return pad_sequences([seq], maxlen=100, padding="post", truncating="post")
 
 def tokenize():
     counter = Counter()

@@ -1,7 +1,8 @@
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
-from preprocess import X, test_X, label, test_label, tokens_dict
+import sys
+from preprocess import X, test_X, label, test_label, tokens_dict, encode_text
 
 X = np.asarray(X, dtype=np.int32)
 test_X = np.asarray(test_X, dtype=np.int32)
@@ -35,3 +36,20 @@ plt.legend(loc='lower right')
 plt.show()
 
 test_loss, test_acc = model.evaluate(test_X,  test_label, verbose=2)
+
+
+def predict_message(message):
+    encoded = encode_text(message)
+    score = float(model.predict(encoded, verbose=0)[0][0])
+    label_name = "spam" if score >= 0.5 else "nie spam"
+    return label_name, score
+
+
+if len(sys.argv) > 1:
+    message = " ".join(sys.argv[1:]).strip()
+else:
+    message = input("Ppodaj wiadomosc do sprawdzenia: ").strip()
+
+if message:
+    result, score = predict_message(message)
+    print(f"wynik: {result} (prawdopodobieństwo spamu: {score:.3f})")
